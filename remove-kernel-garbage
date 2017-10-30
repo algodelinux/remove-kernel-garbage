@@ -1,0 +1,31 @@
+#!/bin/bash
+#
+# nombre              : remove-kernel-garbage
+# descripción         : Elimina archivos de kernels que no se encuentran instalados del directorio /boot
+# autor               : Esteban M. Navas Martín
+# fecha creación      : 30102017
+# última modificación : 30102017
+# uso                 : remove-kernel-garbage
+# instalación         : Guardar en  /usr/local/sbin/
+
+#
+# Copyright 2017, Esteban M. Navas Martín <algodelinux@gmail.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License at <http://www.gnu.org/licenses/> for
+# more details.
+#
+
+
+# Obtenemos la lista de kernels instalados
+kernelsinstalados=$(echo "$(dpkg -l|grep linux-image | grep -v -e extra -e linux-image-generic | awk '{print $2 }' | sed -e s/^linux-image-// -e s/-generic$// )" | paste -sd " " - | sed 's/[^ ]* */-e &/g')
+
+# Borramos rastros de kernels no instalados
+rm -f $(find /boot -maxdepth 1 -not -type d | grep -v $kernelsinstalados | grep -e config -e initrd -e System.map -e abi -e config)
